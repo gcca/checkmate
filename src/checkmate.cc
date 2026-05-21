@@ -1,5 +1,6 @@
 #include <crow_all.h>
 #include <CLI11.hpp>
+#include "checkmate/app.hpp"
 #include "checkmate/handling/admin/routes.hpp"
 #include "checkmate/handling/auth/routes.hpp"
 #include "checkmate/handling/dashboard/routes.hpp"
@@ -13,7 +14,7 @@ int main(int argc, char* argv[]) {
 
   CLI11_PARSE(app, argc, argv);
 
-  crow::SimpleApp server;
+  checkmate::App server;
 
   CROW_ROUTE(server, "/checkmate")([] {
     crow::response res;

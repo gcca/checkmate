@@ -56,17 +56,20 @@ crow::response SignOutPost(const crow::request& req) {
   return res;
 }
 
-void AddRoutes(crow::SimpleApp& app) {
+void AddRoutes(checkmate::App& app) {
   crow::mustache::set_global_base("src/checkmate");
 
-  CROW_ROUTE(app, "/checkmate/auth/signin")
-      .methods(crow::HTTPMethod::GET)(SignInGet);
+  static crow::Blueprint auth_bp("checkmate/auth", ".checkmate-static",
+                                 "src/checkmate");
 
-  CROW_ROUTE(app, "/checkmate/auth/signin")
-      .methods(crow::HTTPMethod::POST)(SignInPost);
+  CROW_BP_ROUTE(auth_bp, "/signin").methods(crow::HTTPMethod::GET)(SignInGet);
 
-  CROW_ROUTE(app, "/checkmate/auth/signout")
+  CROW_BP_ROUTE(auth_bp, "/signin").methods(crow::HTTPMethod::POST)(SignInPost);
+
+  CROW_BP_ROUTE(auth_bp, "/signout")
       .methods(crow::HTTPMethod::POST)(SignOutPost);
+
+  app.register_blueprint(auth_bp);
 }
 
 }  // namespace checkmate::handling::auth

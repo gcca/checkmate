@@ -6,22 +6,14 @@ namespace cm_auth = checkmate::handling::auth;
 
 namespace checkmate::handling::guard {
 
-crow::response IndexGet(const crow::request& req) {
-  cm_auth::utils::UserInfo info;
-  if (auto err = cm_auth::middlewares::RoleRequired(req, "guard", info))
-    return std::move(*err);
-
+crow::response IndexGet(const cm_auth::utils::UserInfo& info) {
   crow::mustache::context ctx;
   ctx["username"] = info.username;
   return crow::response{
       crow::mustache::load("handling/guard/templates/index.html").render(ctx)};
 }
 
-crow::response DashboardGet(const crow::request& req) {
-  cm_auth::utils::UserInfo info;
-  if (auto err = cm_auth::middlewares::RoleRequired(req, "guard", info))
-    return std::move(*err);
-
+crow::response DashboardGet(const cm_auth::utils::UserInfo& info) {
   crow::mustache::context ctx;
   ctx["username"] = info.username;
   return crow::response{
@@ -29,11 +21,8 @@ crow::response DashboardGet(const crow::request& req) {
           .render(ctx)};
 }
 
-crow::response EmployeesGet(const crow::request& req) {
-  cm_auth::utils::UserInfo info;
-  if (auto err = cm_auth::middlewares::RoleRequired(req, "guard", info))
-    return std::move(*err);
-
+crow::response EmployeesGet(const crow::request& req,
+                            const cm_auth::utils::UserInfo& info) {
   const char* search_param = req.url_params.get("s");
   const std::string search = search_param ? search_param : "";
   const bool filtering = !search.empty();
@@ -90,14 +79,29 @@ SELECT e.name, e.document_number, t.display_name, e.created_at
           .render(ctx)};
 }
 
-void AddRoutes(crow::SimpleApp& app) {
-  CROW_ROUTE(app, "/checkmate/guard").methods(crow::HTTPMethod::GET)(IndexGet);
+void AddRoutes(checkmate::App& app) {
+  using cm_auth::middlewares::GuardRequired;
 
-  CROW_ROUTE(app, "/checkmate/guard/dashboard")
-      .methods(crow::HTTPMethod::GET)(DashboardGet);
+  static crow::Blueprint guard_bp("checkmate/guard", ".checkmate-static",
+                                  "src/checkmate");
+  guard_bp.middlewares<checkmate::App, GuardRequired>();
 
-  CROW_ROUTE(app, "/checkmate/guard/employees")
-      .methods(crow::HTTPMethod::GET)(EmployeesGet);
+  CROW_BP_ROUTE(guard_bp, "")
+      .methods(crow::HTTPMethod::GET)([&app](const crow::request& req) {
+        return IndexGet(app.get_context<GuardRequired>(req).user);
+      });
+
+  CROW_BP_ROUTE(guard_bp, "/dashboard")
+      .methods(crow::HTTPMethod::GET)([&app](const crow::request& req) {
+        return DashboardGet(app.get_context<GuardRequired>(req).user);
+      });
+
+  CROW_BP_ROUTE(guard_bp, "/employees")
+      .methods(crow::HTTPMethod::GET)([&app](const crow::request& req) {
+        return EmployeesGet(req, app.get_context<GuardRequired>(req).user);
+      });
+
+  app.register_blueprint(guard_bp);
 }
 
 }  // namespace checkmate::handling::guard

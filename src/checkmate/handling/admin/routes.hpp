@@ -2,19 +2,26 @@
 
 #include <crow_all.h>
 
+#include "checkmate/app.hpp"
+#include "checkmate/handling/auth/utils.hpp"
+
 namespace checkmate::handling::admin {
 
-void AddRoutes(crow::SimpleApp& app);
+void AddRoutes(checkmate::App& app);
 
-crow::response IndexGet(const crow::request& req);
-crow::response DashboardGet(const crow::request& req);
+crow::response IndexGet(const auth::utils::UserInfo& info);
+crow::response DashboardGet(const auth::utils::UserInfo& info);
 
-crow::response EmployeeListGet(const crow::request& req);
-crow::response EmployeeCreateGet(const crow::request& req);
-crow::response EmployeeCreatePost(const crow::request& req);
-crow::response EmployeeDetailsGet(const crow::request& req, int rowid);
-crow::response EmployeeUpdateGet(const crow::request& req, int rowid);
-crow::response EmployeeUpdatePost(const crow::request& req, int rowid);
-crow::response EmployeeDeletePost(const crow::request& req, int rowid);
+crow::response EmployeeListGet(const crow::request& req,
+                               const auth::utils::UserInfo& info);
+crow::response EmployeeCreateGet(const auth::utils::UserInfo& info);
+crow::response EmployeeCreatePost(const crow::request& req,
+                                  const auth::utils::UserInfo& info);
+crow::response EmployeeDetailsGet(const auth::utils::UserInfo& info, int rowid);
+crow::response EmployeeUpdateGet(const auth::utils::UserInfo& info, int rowid);
+crow::response EmployeeUpdatePost(const crow::request& req,
+                                  const auth::utils::UserInfo& info,
+                                  int rowid);
+crow::response EmployeeDeletePost(const auth::utils::UserInfo& info, int rowid);
 
 }  // namespace checkmate::handling::admin

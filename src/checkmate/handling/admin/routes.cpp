@@ -90,22 +90,14 @@ SELECT e.rowid, e.name, e.document_number, t.display_name, e.created_at
 
 }  // namespace
 
-crow::response IndexGet(const crow::request& req) {
-  cm_auth::utils::UserInfo info;
-  if (auto err = cm_auth::middlewares::RoleRequired(req, "admin", info))
-    return std::move(*err);
-
+crow::response IndexGet(const cm_auth::utils::UserInfo& info) {
   crow::mustache::context ctx;
   ctx["username"] = info.username;
   return crow::response{
       crow::mustache::load("handling/admin/templates/index.html").render(ctx)};
 }
 
-crow::response DashboardGet(const crow::request& req) {
-  cm_auth::utils::UserInfo info;
-  if (auto err = cm_auth::middlewares::RoleRequired(req, "admin", info))
-    return std::move(*err);
-
+crow::response DashboardGet(const cm_auth::utils::UserInfo& info) {
   crow::mustache::context ctx;
   ctx["username"] = info.username;
   return crow::response{
@@ -113,11 +105,8 @@ crow::response DashboardGet(const crow::request& req) {
           .render(ctx)};
 }
 
-crow::response EmployeeListGet(const crow::request& req) {
-  cm_auth::utils::UserInfo info;
-  if (auto err = cm_auth::middlewares::RoleRequired(req, "admin", info))
-    return std::move(*err);
-
+crow::response EmployeeListGet(const crow::request& req,
+                               const cm_auth::utils::UserInfo& info) {
   const char* s = req.url_params.get("s");
   const std::string search = s ? s : "";
 
@@ -128,11 +117,7 @@ crow::response EmployeeListGet(const crow::request& req) {
   return EmployeeListFragment(db.get(), info.username, search);
 }
 
-crow::response EmployeeCreateGet(const crow::request& req) {
-  cm_auth::utils::UserInfo info;
-  if (auto err = cm_auth::middlewares::RoleRequired(req, "admin", info))
-    return std::move(*err);
-
+crow::response EmployeeCreateGet(const cm_auth::utils::UserInfo& info) {
   auto db = cm_auth::utils::ConnectDb();
   if (!db)
     return crow::response{503};
@@ -145,11 +130,8 @@ crow::response EmployeeCreateGet(const crow::request& req) {
           .render(ctx)};
 }
 
-crow::response EmployeeCreatePost(const crow::request& req) {
-  cm_auth::utils::UserInfo info;
-  if (auto err = cm_auth::middlewares::RoleRequired(req, "admin", info))
-    return std::move(*err);
-
+crow::response EmployeeCreatePost(const crow::request& req,
+                                  const cm_auth::utils::UserInfo& info) {
   const auto params = req.get_body_params();
   const char* name_p = params.get("name");
   const char* doc_type_p = params.get("document_type");
@@ -182,11 +164,8 @@ crow::response EmployeeCreatePost(const crow::request& req) {
   return EmployeeListFragment(db.get(), info.username);
 }
 
-crow::response EmployeeDetailsGet(const crow::request& req, int rowid) {
-  cm_auth::utils::UserInfo info;
-  if (auto err = cm_auth::middlewares::RoleRequired(req, "admin", info))
-    return std::move(*err);
-
+crow::response EmployeeDetailsGet(const cm_auth::utils::UserInfo& info,
+                                  int rowid) {
   auto db = cm_auth::utils::ConnectDb();
   if (!db)
     return crow::response{503};
@@ -224,11 +203,8 @@ SELECT e.rowid, e.name, e.document_number, t.display_name, e.document_type, e.cr
           .render(ctx)};
 }
 
-crow::response EmployeeUpdateGet(const crow::request& req, int rowid) {
-  cm_auth::utils::UserInfo info;
-  if (auto err = cm_auth::middlewares::RoleRequired(req, "admin", info))
-    return std::move(*err);
-
+crow::response EmployeeUpdateGet(const cm_auth::utils::UserInfo& info,
+                                 int rowid) {
   auto db = cm_auth::utils::ConnectDb();
   if (!db)
     return crow::response{503};
@@ -263,11 +239,9 @@ crow::response EmployeeUpdateGet(const crow::request& req, int rowid) {
           .render(ctx)};
 }
 
-crow::response EmployeeUpdatePost(const crow::request& req, int rowid) {
-  cm_auth::utils::UserInfo info;
-  if (auto err = cm_auth::middlewares::RoleRequired(req, "admin", info))
-    return std::move(*err);
-
+crow::response EmployeeUpdatePost(const crow::request& req,
+                                  const cm_auth::utils::UserInfo& info,
+                                  int rowid) {
   const auto params = req.get_body_params();
   const char* name_p = params.get("name");
   const char* doc_type_p = params.get("document_type");
@@ -301,11 +275,8 @@ crow::response EmployeeUpdatePost(const crow::request& req, int rowid) {
   return EmployeeListFragment(db.get(), info.username);
 }
 
-crow::response EmployeeDeletePost(const crow::request& req, int rowid) {
-  cm_auth::utils::UserInfo info;
-  if (auto err = cm_auth::middlewares::RoleRequired(req, "admin", info))
-    return std::move(*err);
-
+crow::response EmployeeDeletePost(const cm_auth::utils::UserInfo& info,
+                                  int rowid) {
   auto db = cm_auth::utils::ConnectDb();
   if (!db)
     return crow::response{503};
@@ -322,32 +293,68 @@ crow::response EmployeeDeletePost(const crow::request& req, int rowid) {
   return EmployeeListFragment(db.get(), info.username);
 }
 
-void AddRoutes(crow::SimpleApp& app) {
-  CROW_ROUTE(app, "/checkmate/admin").methods(crow::HTTPMethod::GET)(IndexGet);
+void AddRoutes(checkmate::App& app) {
+  using cm_auth::middlewares::AdminRequired;
 
-  CROW_ROUTE(app, "/checkmate/admin/dashboard")
-      .methods(crow::HTTPMethod::GET)(DashboardGet);
+  static crow::Blueprint admin_bp("checkmate/admin", ".checkmate-static",
+                                  "src/checkmate");
+  admin_bp.middlewares<checkmate::App, AdminRequired>();
 
-  CROW_ROUTE(app, "/checkmate/admin/employee")
-      .methods(crow::HTTPMethod::GET)(EmployeeListGet);
+  CROW_BP_ROUTE(admin_bp, "")
+      .methods(crow::HTTPMethod::GET)([&app](const crow::request& req) {
+        return IndexGet(app.get_context<AdminRequired>(req).user);
+      });
 
-  CROW_ROUTE(app, "/checkmate/admin/employee/create")
-      .methods(crow::HTTPMethod::GET)(EmployeeCreateGet);
+  CROW_BP_ROUTE(admin_bp, "/dashboard")
+      .methods(crow::HTTPMethod::GET)([&app](const crow::request& req) {
+        return DashboardGet(app.get_context<AdminRequired>(req).user);
+      });
 
-  CROW_ROUTE(app, "/checkmate/admin/employee/create")
-      .methods(crow::HTTPMethod::POST)(EmployeeCreatePost);
+  CROW_BP_ROUTE(admin_bp, "/employee")
+      .methods(crow::HTTPMethod::GET)([&app](const crow::request& req) {
+        return EmployeeListGet(req, app.get_context<AdminRequired>(req).user);
+      });
 
-  CROW_ROUTE(app, "/checkmate/admin/employee/<int>/details")
-      .methods(crow::HTTPMethod::GET)(EmployeeDetailsGet);
+  CROW_BP_ROUTE(admin_bp, "/employee/create")
+      .methods(crow::HTTPMethod::GET)([&app](const crow::request& req) {
+        return EmployeeCreateGet(app.get_context<AdminRequired>(req).user);
+      });
 
-  CROW_ROUTE(app, "/checkmate/admin/employee/<int>/update")
-      .methods(crow::HTTPMethod::GET)(EmployeeUpdateGet);
+  CROW_BP_ROUTE(admin_bp, "/employee/create")
+      .methods(crow::HTTPMethod::POST)([&app](const crow::request& req) {
+        return EmployeeCreatePost(req,
+                                  app.get_context<AdminRequired>(req).user);
+      });
 
-  CROW_ROUTE(app, "/checkmate/admin/employee/<int>/update")
-      .methods(crow::HTTPMethod::POST)(EmployeeUpdatePost);
+  CROW_BP_ROUTE(admin_bp, "/employee/<int>/details")
+      .methods(crow::HTTPMethod::GET)(
+          [&app](const crow::request& req, int rowid) {
+            return EmployeeDetailsGet(app.get_context<AdminRequired>(req).user,
+                                      rowid);
+          });
 
-  CROW_ROUTE(app, "/checkmate/admin/employee/<int>/delete")
-      .methods(crow::HTTPMethod::POST)(EmployeeDeletePost);
+  CROW_BP_ROUTE(admin_bp, "/employee/<int>/update")
+      .methods(crow::HTTPMethod::GET)(
+          [&app](const crow::request& req, int rowid) {
+            return EmployeeUpdateGet(app.get_context<AdminRequired>(req).user,
+                                     rowid);
+          });
+
+  CROW_BP_ROUTE(admin_bp, "/employee/<int>/update")
+      .methods(crow::HTTPMethod::POST)(
+          [&app](const crow::request& req, int rowid) {
+            return EmployeeUpdatePost(
+                req, app.get_context<AdminRequired>(req).user, rowid);
+          });
+
+  CROW_BP_ROUTE(admin_bp, "/employee/<int>/delete")
+      .methods(crow::HTTPMethod::POST)(
+          [&app](const crow::request& req, int rowid) {
+            return EmployeeDeletePost(app.get_context<AdminRequired>(req).user,
+                                      rowid);
+          });
+
+  app.register_blueprint(admin_bp);
 }
 
 }  // namespace checkmate::handling::admin

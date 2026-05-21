@@ -2,9 +2,11 @@
 
 #include <crow_all.h>
 
+#include "checkmate/app.hpp"
+
 namespace checkmate::handling::auth {
 
-void AddRoutes(crow::SimpleApp& app);
+void AddRoutes(checkmate::App& app);
 
 crow::response SignInGet();
 crow::response SignInPost(const crow::request& req);
