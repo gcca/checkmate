@@ -17,10 +17,10 @@ crow::json::wvalue::list FetchDocumentTypes(sqlite3* db,
                                             std::string_view selected = {}) {
   crow::json::wvalue::list types;
   sqlite3_stmt* stmt = nullptr;
-  if (sqlite3_prepare_v2(
-          db,
-          "SELECT name, display_name FROM cm_document_type ORDER BY display_name",
-          -1, &stmt, nullptr) != SQLITE_OK)
+  if (sqlite3_prepare_v2(db,
+                         "SELECT name, display_name FROM cm_document_type "
+                         "ORDER BY display_name",
+                         -1, &stmt, nullptr) != SQLITE_OK)
     return types;
 
   while (sqlite3_step(stmt) == SQLITE_ROW) {
@@ -37,7 +37,8 @@ crow::json::wvalue::list FetchDocumentTypes(sqlite3* db,
   return types;
 }
 
-crow::response EmployeeListFragment(sqlite3* db, const std::string& username,
+crow::response EmployeeListFragment(sqlite3* db,
+                                    const std::string& username,
                                     const std::string& search = "") {
   const bool filtering = !search.empty();
 
@@ -322,8 +323,7 @@ crow::response EmployeeDeletePost(const crow::request& req, int rowid) {
 }
 
 void AddRoutes(crow::SimpleApp& app) {
-  CROW_ROUTE(app, "/checkmate/admin")
-      .methods(crow::HTTPMethod::GET)(IndexGet);
+  CROW_ROUTE(app, "/checkmate/admin").methods(crow::HTTPMethod::GET)(IndexGet);
 
   CROW_ROUTE(app, "/checkmate/admin/dashboard")
       .methods(crow::HTTPMethod::GET)(DashboardGet);
