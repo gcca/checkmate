@@ -1,0 +1,77 @@
+{{! Employee update fragment }}
+<div class="mx-auto max-w-2xl">
+  <div class="mb-6 flex items-center gap-3">
+    <button class="btn btn-ghost btn-sm"
+            hx-get="/checkmate/admin/employee/{{rowid}}/details"
+            hx-target="#main-content"
+            hx-swap="innerHTML">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+      </svg>
+    </button>
+    <div>
+      <h1 class="text-3xl font-bold">Editar empleado</h1>
+      <p class="mt-1 text-sm opacity-60">Modificar los datos del empleado</p>
+    </div>
+  </div>
+
+  <div class="rounded-xl bg-base-100 p-6 shadow">
+    <form hx-post="/checkmate/admin/employee/{{rowid}}/update"
+          hx-target="#main-content"
+          hx-swap="innerHTML">
+      <div class="flex flex-col gap-4">
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-medium">Nombre completo</span>
+          </label>
+          <input type="text"
+                 name="name"
+                 value="{{name}}"
+                 class="input input-bordered"
+                 required
+                 autofocus />
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-medium">Tipo de documento</span>
+          </label>
+          <select name="document_type" class="select select-bordered" required>
+            {{#document_types}}
+            <option value="{{name}}"{{#selected}} selected{{/selected}}>{{display_name}}</option>
+            {{/document_types}}
+          </select>
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-medium">Número de documento</span>
+          </label>
+          <input type="text"
+                 name="document_number"
+                 value="{{document_number}}"
+                 class="input input-bordered font-mono"
+                 required />
+        </div>
+
+        <div class="mt-2 flex justify-end gap-2">
+          <button type="button"
+                  class="btn btn-ghost"
+                  hx-get="/checkmate/admin/employee/{{rowid}}/details"
+                  hx-target="#main-content"
+                  hx-swap="innerHTML">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+            Guardar cambios
+          </button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>

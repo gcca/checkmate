@@ -1,0 +1,63 @@
+{{! Employees list fragment }}
+<div class="mx-auto max-w-5xl">
+  <div class="mb-6 flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold">Empleados</h1>
+      <p class="mt-1 text-sm opacity-60">Empleados de tiendas registrados en el sistema</p>
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <input
+      type="text"
+      name="s"
+      value="{{search}}"
+      placeholder="Buscar por nombre o número de documento..."
+      class="input input-bordered w-full sm:w-96"
+      hx-get="/checkmate/guard/employees"
+      hx-target="#main-content"
+      hx-swap="innerHTML"
+      hx-trigger="keyup changed delay:400ms"
+      hx-include="[name='s']"
+    />
+  </div>
+
+  <div class="overflow-x-auto rounded-xl bg-base-100 shadow">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Documento</th>
+          <th>Tipo</th>
+          <th>Registrado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#employees}}
+        <tr class="hover">
+          <td>
+            <div class="flex items-center gap-3">
+              <div class="avatar placeholder">
+                <div class="flex h-9 w-9 items-center justify-center rounded-full bg-neutral text-neutral-content text-xs font-semibold">
+                  {{initials}}
+                </div>
+              </div>
+              <span class="font-medium">{{name}}</span>
+            </div>
+          </td>
+          <td class="font-mono text-sm">{{document_number}}</td>
+          <td><span class="badge badge-ghost badge-sm">{{document_type}}</span></td>
+          <td class="text-xs opacity-60">{{created_at}}</td>
+        </tr>
+        {{/employees}}
+        {{^employees}}
+        <tr>
+          <td colspan="4" class="py-12 text-center opacity-50">
+            No hay empleados registrados
+          </td>
+        </tr>
+        {{/employees}}
+      </tbody>
+    </table>
+  </div>
+</div>

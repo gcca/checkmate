@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="es" data-theme="dim">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CheckMate | Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" crossorigin="anonymous"></script>
+    <script>
+      function setTheme(name) {
+        document.documentElement.setAttribute('data-theme', name);
+        localStorage.setItem('theme', name);
+        document.querySelectorAll('[data-theme-btn]').forEach(function(btn) {
+          btn.querySelector('svg').classList.toggle('invisible', btn.dataset.themeBtn !== name);
+        });
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        const saved = localStorage.getItem('theme');
+        if (saved) setTheme(saved);
+      });
+    </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const t = new URLSearchParams(window.location.search).get('t') || 'dashboard';
+        const url = t === 'employees'
+          ? '/checkmate/admin/employee'
+          : '/checkmate/admin/dashboard';
+        htmx.ajax('GET', url, { target: '#main-content', swap: 'innerHTML' });
+      });
+    </script>
+  </head>
+  <body class="min-h-screen bg-base-200">
+    <div class="drawer lg:drawer-open">
+      <input id="sidebar-drawer" type="checkbox" class="drawer-toggle" />
+      <div class="drawer-content flex flex-col">
+
+        {{! Navbar mobile }}
+        <div class="navbar bg-base-100 shadow-md lg:hidden">
+          <div class="flex-none">
+            <label for="sidebar-drawer" class="btn btn-square btn-ghost">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block h-6 w-6 stroke-current">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+            </label>
+          </div>
+          <div class="flex-1">
+            <span class="text-xl font-bold">CheckMate</span>
+          </div>
+        </div>
+
+        {{! Main content }}
+        <main class="flex-1 p-6">
+          <div id="main-content" class="mx-auto max-w-5xl">
+          </div>
+        </main>
+      </div>
+
+      {{! Sidebar }}
+      <div class="drawer-side z-10">
+        <label for="sidebar-drawer" class="drawer-overlay"></label>
+        <aside class="flex h-full w-64 flex-col bg-base-100">
+
+          {{! Brand }}
+          <div class="flex h-16 items-center gap-2 border-b border-base-300 px-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-8 w-8 text-secondary">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
+            </svg>
+            <div>
+              <div class="text-lg font-bold leading-tight">CheckMate</div>
+              <div class="badge badge-secondary badge-sm">admin</div>
+            </div>
+          </div>
+
+          {{! Nav }}
+          <nav class="flex-1 overflow-y-auto p-4">
+            <ul class="menu gap-1">
+              <li>
+                <a class="active"
+                   hx-get="/checkmate/admin/dashboard"
+                   hx-target="#main-content"
+                   hx-swap="innerHTML"
+                   hx-push-url="?t=dashboard">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                  </svg>
+                  Dashboard
+                </a>
+              </li>
+              <li>
+                <a hx-get="/checkmate/admin/employee"
+                   hx-target="#main-content"
+                   hx-swap="innerHTML"
+                   hx-push-url="?t=employees">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                  </svg>
+                  Empleados
+                </a>
+              </li>
+            </ul>
+          </nav>
+
+          {{! User section }}
+          <div class="border-t border-base-300 p-4">
+            <div class="dropdown dropdown-top w-full">
+              <div tabindex="0" role="button" class="flex cursor-pointer items-center gap-3 rounded-lg p-1 transition-colors hover:bg-base-200">
+                <div class="avatar placeholder">
+                  <div class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-content">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6">
+                      <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="truncate text-sm font-semibold">{{username}}</div>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4 opacity-50">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+                </svg>
+              </div>
+              <ul tabindex="-1" class="dropdown-content menu rounded-box z-50 mb-2 w-56 border border-base-300 bg-base-100 p-2 shadow-lg">
+                <li>
+                  <details>
+                    <summary>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.098 19.902a3.75 3.75 0 005.304 0l6.401-6.402M6.75 21A3.75 3.75 0 013 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25c.621 0 1.125.504 1.125 1.125v4.072M6.75 21a3.75 3.75 0 003.75-3.75V8.197M6.75 21h13.125c.621 0 1.125-.504 1.125-1.125v-5.25c0-.621-.504-1.125-1.125-1.125h-4.072M10.5 8.197l2.88-2.88c.438-.439 1.15-.439 1.59 0l3.712 3.713c.44.44.44 1.152 0 1.59l-2.879 2.88M6.75 17.25h.008v.008H6.75v-.008z" />
+                      </svg>
+                      Tema
+                    </summary>
+                    <ul class="max-h-48 overflow-y-auto">
+                      <li><button class="gap-3 px-2" data-theme-btn="light" onclick="setTheme('light')"><div data-theme="light" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Light</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="dark" onclick="setTheme('dark')"><div data-theme="dark" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Dark</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="cupcake" onclick="setTheme('cupcake')"><div data-theme="cupcake" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Cupcake</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="bumblebee" onclick="setTheme('bumblebee')"><div data-theme="bumblebee" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Bumblebee</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="emerald" onclick="setTheme('emerald')"><div data-theme="emerald" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Emerald</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="corporate" onclick="setTheme('corporate')"><div data-theme="corporate" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Corporate</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="synthwave" onclick="setTheme('synthwave')"><div data-theme="synthwave" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Synthwave</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="retro" onclick="setTheme('retro')"><div data-theme="retro" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Retro</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="cyberpunk" onclick="setTheme('cyberpunk')"><div data-theme="cyberpunk" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Cyberpunk</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="valentine" onclick="setTheme('valentine')"><div data-theme="valentine" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Valentine</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="halloween" onclick="setTheme('halloween')"><div data-theme="halloween" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Halloween</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="garden" onclick="setTheme('garden')"><div data-theme="garden" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Garden</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="forest" onclick="setTheme('forest')"><div data-theme="forest" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Forest</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="aqua" onclick="setTheme('aqua')"><div data-theme="aqua" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Aqua</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="lofi" onclick="setTheme('lofi')"><div data-theme="lofi" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Lofi</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="pastel" onclick="setTheme('pastel')"><div data-theme="pastel" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Pastel</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="fantasy" onclick="setTheme('fantasy')"><div data-theme="fantasy" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Fantasy</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="wireframe" onclick="setTheme('wireframe')"><div data-theme="wireframe" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Wireframe</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="black" onclick="setTheme('black')"><div data-theme="black" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Black</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="luxury" onclick="setTheme('luxury')"><div data-theme="luxury" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Luxury</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="dracula" onclick="setTheme('dracula')"><div data-theme="dracula" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Dracula</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="cmyk" onclick="setTheme('cmyk')"><div data-theme="cmyk" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">CMYK</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="autumn" onclick="setTheme('autumn')"><div data-theme="autumn" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Autumn</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="business" onclick="setTheme('business')"><div data-theme="business" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Business</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="acid" onclick="setTheme('acid')"><div data-theme="acid" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Acid</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="lemonade" onclick="setTheme('lemonade')"><div data-theme="lemonade" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Lemonade</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="night" onclick="setTheme('night')"><div data-theme="night" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Night</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="coffee" onclick="setTheme('coffee')"><div data-theme="coffee" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Coffee</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="winter" onclick="setTheme('winter')"><div data-theme="winter" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Winter</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="dim" onclick="setTheme('dim')"><div data-theme="dim" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Dim</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="nord" onclick="setTheme('nord')"><div data-theme="nord" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Nord</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="sunset" onclick="setTheme('sunset')"><div data-theme="sunset" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Sunset</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="caramellatte" onclick="setTheme('caramellatte')"><div data-theme="caramellatte" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Caramellatte</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="abyss" onclick="setTheme('abyss')"><div data-theme="abyss" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Abyss</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                      <li><button class="gap-3 px-2" data-theme-btn="silk" onclick="setTheme('silk')"><div data-theme="silk" class="grid shrink-0 grid-cols-2 gap-0.5 rounded bg-base-100 p-1 shadow-sm"><div class="size-1 rounded-full bg-base-content"></div><div class="size-1 rounded-full bg-primary"></div><div class="size-1 rounded-full bg-secondary"></div><div class="size-1 rounded-full bg-accent"></div></div><span class="flex-1 text-left">Silk</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="invisible h-3 w-3 shrink-0"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></button></li>
+                    </ul>
+                  </details>
+                </li>
+                <li>
+                  <form method="post" action="/checkmate/auth/signout" class="p-0">
+                    <button type="submit" class="flex w-full items-center gap-2 text-error">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                      </svg>
+                      Cerrar sesion
+                    </button>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+        </aside>
+      </div>
+    </div>
+  </body>
+</html>

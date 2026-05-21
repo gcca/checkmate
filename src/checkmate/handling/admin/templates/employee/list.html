@@ -1,0 +1,119 @@
+{{! Employee list fragment }}
+<div class="mx-auto max-w-5xl">
+  <div class="mb-6 flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold">Empleados</h1>
+      <p class="mt-1 text-sm opacity-60">Empleados de tiendas registrados en el sistema</p>
+    </div>
+    <button class="btn btn-secondary btn-sm gap-2"
+            hx-get="/checkmate/admin/employee/create"
+            hx-target="#main-content"
+            hx-swap="innerHTML">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+      Nuevo
+    </button>
+  </div>
+
+  <div class="mb-4">
+    <input
+      type="text"
+      name="s"
+      value="{{search}}"
+      placeholder="Buscar por nombre o número de documento..."
+      class="input input-bordered w-full sm:w-96"
+      hx-get="/checkmate/admin/employee"
+      hx-target="#main-content"
+      hx-swap="innerHTML"
+      hx-trigger="keyup changed delay:400ms"
+      hx-include="[name='s']"
+    />
+  </div>
+
+  <div class="overflow-x-auto rounded-xl bg-base-100 shadow">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Documento</th>
+          <th>Tipo</th>
+          <th>Registrado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#employees}}
+        <tr class="hover">
+          <td>
+            <div class="flex items-center gap-3">
+              <div class="avatar placeholder">
+                <div class="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-secondary-content text-xs font-semibold">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5">
+                    <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+              <span class="font-medium">{{name}}</span>
+            </div>
+          </td>
+          <td class="font-mono text-sm">{{document_number}}</td>
+          <td><span class="badge badge-ghost badge-sm">{{document_type}}</span></td>
+          <td class="text-xs opacity-60">{{created_at}}</td>
+          <td>
+            <div class="dropdown dropdown-end">
+              <div tabindex="0" role="button" class="btn btn-ghost btn-xs">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+                </svg>
+              </div>
+              <ul tabindex="0" class="dropdown-content menu rounded-box z-50 w-40 border border-base-300 bg-base-100 p-1 shadow-lg text-sm">
+                <li>
+                  <a hx-get="/checkmate/admin/employee/{{rowid}}/details"
+                     hx-target="#main-content"
+                     hx-swap="innerHTML">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Ver detalles
+                  </a>
+                </li>
+                <li>
+                  <a hx-get="/checkmate/admin/employee/{{rowid}}/update"
+                     hx-target="#main-content"
+                     hx-swap="innerHTML">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                    </svg>
+                    Editar
+                  </a>
+                </li>
+                <li>
+                  <button class="text-error"
+                          hx-post="/checkmate/admin/employee/{{rowid}}/delete"
+                          hx-target="#main-content"
+                          hx-swap="innerHTML"
+                          hx-confirm="¿Eliminar a {{name}}? Esta acción no se puede deshacer.">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                    </svg>
+                    Eliminar
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+        {{/employees}}
+        {{^employees}}
+        <tr>
+          <td colspan="5" class="py-12 text-center opacity-50">
+            No hay empleados registrados
+          </td>
+        </tr>
+        {{/employees}}
+      </tbody>
+    </table>
+  </div>
+</div>

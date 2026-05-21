@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es" data-theme="dim">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CheckMate | Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body class="min-h-screen bg-base-200">
+    <header class="navbar bg-base-100 px-4 shadow-sm">
+      <div class="flex-1">
+        <a class="text-xl font-bold" href="/checkmate/dashboard">CheckMate</a>
+      </div>
+      <div class="flex-none items-center gap-3">
+        <span class="text-sm opacity-70">{{username}}</span>
+        <form method="post" action="/checkmate/auth/signout">
+          <button type="submit" class="btn btn-sm btn-outline">Salir</button>
+        </form>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-5xl px-4 py-8">
+      <section class="rounded-lg bg-base-100 p-6 shadow-sm">
+        <h1 class="text-2xl font-bold">Dashboard</h1>
+        <p class="mt-2 opacity-70">Control de ingreso de empleados de tiendas.</p>
+      </section>
+    </main>
+  </body>
+</html>

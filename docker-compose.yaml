@@ -1,0 +1,15 @@
+services:
+  checkmate:
+    build:
+      context: .
+    image: checkmate:latest
+    ports:
+      - "5571:5571"
+    environment:
+      DATABASE_URL: sqlite:/app/db/checkmate.db
+    volumes:
+      - db:/app/db
+    restart: unless-stopped
+
+volumes:
+  db:
