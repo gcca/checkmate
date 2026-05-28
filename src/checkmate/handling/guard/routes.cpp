@@ -113,7 +113,8 @@ SELECT e.name, e.document_number, t.display_name, e.created_at
 
     while (sqlite3_step(stmt) == SQLITE_ROW) {
       crow::json::wvalue e;
-      const char* name_c = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+      const char* name_c =
+          reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
       std::string name = name_c ? name_c : "";
       e["name"] = name;
       e["document_number"] =
@@ -122,7 +123,9 @@ SELECT e.name, e.document_number, t.display_name, e.created_at
           reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
       e["created_at"] =
           reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
-      char init = name.empty() ? '?' : static_cast<char>(std::toupper(static_cast<unsigned char>(name[0])));
+      char init = name.empty() ? '?'
+                               : static_cast<char>(std::toupper(
+                                     static_cast<unsigned char>(name[0])));
       e["initials"] = std::string(1, init);
       employees.push_back(std::move(e));
     }
@@ -134,8 +137,7 @@ SELECT e.name, e.document_number, t.display_name, e.created_at
   ctx["search"] = search;
   ctx["employees"] = std::move(employees);
   return crow::response{
-      crow::mustache::load("handling/guard/templates/search.html")
-          .render(ctx)};
+      crow::mustache::load("handling/guard/templates/search.html").render(ctx)};
 }
 
 void AddRoutes(crow::SimpleApp& app) {
