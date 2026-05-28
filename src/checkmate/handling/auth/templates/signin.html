@@ -66,7 +66,7 @@
               </div>
               {{/error}}
 
-              <form method="post" action="/checkmate/auth/signin" class="space-y-4">
+              <form id="signin-form" method="post" action="/checkmate/auth/signin" class="space-y-4" onsubmit="showSigninLoading()">
                 <label class="form-control w-full">
                   <div class="label pb-1">
                     <span class="label-text text-xs font-semibold uppercase tracking-wide opacity-60">Usuario</span>
@@ -123,5 +123,30 @@
 
       </div>
     </main>
+
+    <script>
+      function showSigninLoading() {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+          overlay.classList.remove('hidden');
+          overlay.classList.add('flex');
+        }
+        document.body.style.cursor = 'wait';
+        const form = document.getElementById('signin-form');
+        if (form) {
+          const btn = form.querySelector('button[type="submit"]');
+          if (btn) btn.disabled = true;
+        }
+      }
+    </script>
+
+    <!-- Invisible full-page blocker + centered spinner (shown only during sign-in POST) -->
+    <div
+      id="loading-overlay"
+      class="hidden fixed inset-0 z-[9999] bg-transparent flex items-center justify-center"
+      style="pointer-events: auto;"
+    >
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
   </body>
 </html>

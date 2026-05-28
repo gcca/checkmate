@@ -26,7 +26,7 @@ using DbPtr = std::unique_ptr<sqlite3, SqliteDeleter>;
 [[nodiscard]] inline std::string DatabasePath() {
   const char* database_url = std::getenv("DATABASE_URL");
   if (!database_url)
-    return "checkmate.sqlite3";
+    return "db/checkmate.db";
 
   std::string path = database_url;
   if (path.starts_with("sqlite:"))

@@ -1,5 +1,6 @@
 #include <crow_all.h>
 #include <CLI11.hpp>
+
 #include "checkmate/app.hpp"
 #include "checkmate/handling/admin/routes.hpp"
 #include "checkmate/handling/auth/routes.hpp"
